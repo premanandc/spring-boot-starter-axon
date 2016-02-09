@@ -41,20 +41,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = RepositoriesTestConfiguration.class)
 public final class RepositoriesIT {
-    @Autowired
-    @Qualifier("repositoriesTestAggregateRootRepository")
-    private EventSourcingRepository<RepositoriesTestAggregateRoot> repository;
-    @Autowired
-    @Qualifier("repositoriesTestAggregateRootRepository")
-    private Repository<RepositoriesTestAggregateRoot> duplicate;
+  @Autowired
+  @Qualifier("repositoriesTestAggregateRootRepository")
+  private EventSourcingRepository<RepositoriesTestAggregateRoot> repository;
+  @Autowired
+  @Qualifier("repositoriesTestAggregateRootRepository")
+  private Repository<RepositoriesTestAggregateRoot> duplicate;
 
-    @Test
-    public void shouldWireRepository() {
-        assertThat(repository).isNotNull();
-    }
+  @Test
+  public void shouldWireRepository() {
+    assertThat(repository).isNotNull();
+  }
 
-    @Test
-    public void shouldCreateSingleton() {
-        assertThat(duplicate).isSameAs(repository);
-    }
+  @Test
+  public void shouldCreateSingleton() {
+    assertThat(duplicate).isSameAs(repository);
+  }
 }

@@ -36,9 +36,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableAutoConfiguration
 public class RepositoriesTestConfiguration {
-    @Bean
-    public EventStore eventStore()
-            throws Exception {
-        return new VolatileEventStore();
-    }
+  @Bean
+  public EventStore eventStore()
+      throws Exception {
+    return new VolatileEventStore();
+  }
 }

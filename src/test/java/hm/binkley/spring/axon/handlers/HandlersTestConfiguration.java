@@ -42,20 +42,19 @@ import java.util.List;
 @Configuration
 @EnableAutoConfiguration
 public class HandlersTestConfiguration {
-    @Bean
-    public EventStore eventStore()
-            throws Exception {
-        return new VolatileEventStore();
-    }
+  @Bean
+  public EventStore eventStore() throws Exception {
+    return new VolatileEventStore();
+  }
 
-    @Component
-    @Getter
-    public static class EventCollector {
-        private final List<TestEvent> events = new ArrayList<>();
+  @Component
+  @Getter
+  public static class EventCollector {
+    private final List<TestEvent> events = new ArrayList<>();
 
-        @EventHandler
-        public void on(final TestEvent event) {
-            events.add(event);
-        }
+    @EventHandler
+    public void on(final TestEvent event) {
+      events.add(event);
     }
+  }
 }

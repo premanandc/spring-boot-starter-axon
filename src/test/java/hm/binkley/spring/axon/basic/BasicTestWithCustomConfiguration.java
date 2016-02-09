@@ -40,24 +40,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableAutoConfiguration
 public class BasicTestWithCustomConfiguration {
-    @Bean
-    public EventStore eventStore() {
-        return new VolatileEventStore();
-    }
+  @Bean
+  public EventStore eventStore() {
+    return new VolatileEventStore();
+  }
 
-    @Bean
-    public CommandBus customCommandBus() {
-        return new CustomCommandBus();
-    }
+  @Bean
+  public CommandBus customCommandBus() {
+    return new CustomCommandBus();
+  }
 
-    @Bean
-    public EventBus customEventBus() {
-        return new CustomEventBus();
-    }
+  @Bean
+  public EventBus customEventBus() {
+    return new CustomEventBus();
+  }
 
-    private static class CustomCommandBus
-            extends SimpleCommandBus {}
+  private static class CustomCommandBus
+      extends SimpleCommandBus {
+  }
 
-    private static class CustomEventBus
-            extends SimpleEventBus {}
+  private static class CustomEventBus
+      extends SimpleEventBus {
+  }
 }

@@ -27,43 +27,38 @@
 
 package hm.binkley.spring.axon;
 
+import static java.util.ServiceLoader.load;
+import static java.util.stream.StreamSupport.stream;
+
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.SimpleCommandBus;
-import org.axonframework.commandhandling.annotation
-        .AnnotationCommandHandlerBeanPostProcessor;
+import org.axonframework.commandhandling.annotation.AnnotationCommandHandlerBeanPostProcessor;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.commandhandling.gateway.DefaultCommandGateway;
 import org.axonframework.domain.IdentifierFactory;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.SimpleEventBus;
-import org.axonframework.eventhandling.annotation
-        .AnnotationEventListenerBeanPostProcessor;
-import org.axonframework.eventsourcing.annotation
-        .AbstractAnnotatedAggregateRoot;
+import org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor;
+import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventstore.EventStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition
-        .ConditionalOnMissingBean;
-import org.springframework.context.annotation
-        .AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-
 import java.util.ServiceLoader;
-
-import static java.util.ServiceLoader.load;
-import static java.util.stream.StreamSupport.stream;
+import javax.annotation.PostConstruct;
 
 /**
  * {@code AxonAutoConfiguration} autoconfigures Axon Framework for Spring
  * Boot.  Use {@link EnableAutoConfiguration} on your configuration class, and
  * define a bean for {@link EventStore}.
- * <p>
- * A minimal configuration is: <pre>   &#64;Configuration
+ *
+ * <p>A minimal configuration is:
+ * <pre>   &#64;Configuration
  * &#64;EnableAutoConfiguration
  * public class AConfiguration {
  *     &#64;Bean
@@ -75,7 +70,7 @@ import static java.util.stream.StreamSupport.stream;
  * repositories include the bean name: <pre>   &#64;Autowired
  * &#64;Qualifier("someAggregateRepository")
  * private Repository&lt;SomeAggregate&gt; repository;</pre>
- * For autoconfiguration to create the repository, mark your aggregate root
+ * For auto-configuration to create the repository, mark your aggregate root
  * class with {@code @MetaInfServices} and extend {@link
  * AbstractAnnotatedAggregateRoot}:
  * <pre>   &#64;MetaInfServices
@@ -83,7 +78,7 @@ import static java.util.stream.StreamSupport.stream;
  *         extends AbstractAnnotatedAggregateRoot&lt;SomeIDType&gt;
  *     &#64;AggregateIdentifier
  *     private SomeIDType id;
- * }</pre>  Autoconfigurating repositories uses standard {@link ServiceLoader}
+ * }</pre>  Auto-configuring repositories uses standard {@link ServiceLoader}
  * to discover aggregate root classes.
  *
  * @author <a href="mailto:binkley@alumni.rice.edu">B. K. Oxley (binkley)</a>
@@ -91,61 +86,61 @@ import static java.util.stream.StreamSupport.stream;
 @Configuration
 @ConditionalOnClass(CommandBus.class)
 public class AxonAutoConfiguration {
-    @Autowired
-    private AnnotationConfigApplicationContext context;
+  @Autowired
+  private AnnotationConfigApplicationContext context;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CommandBus commandBus() {
-        return new SimpleCommandBus();
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public CommandBus commandBus() {
+    return new SimpleCommandBus();
+  }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public CommandGateway commandGateway(final CommandBus commandBus) {
-        return new DefaultCommandGateway(commandBus);
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public CommandGateway commandGateway(final CommandBus commandBus) {
+    return new DefaultCommandGateway(commandBus);
+  }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public EventBus eventBus() {
-        return new SimpleEventBus();
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public EventBus eventBus() {
+    return new SimpleEventBus();
+  }
 
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Bean
-    public EventSourcingRepositoryRegistrar eventSourcingRepositoryRegistrar(
-            final CommandBus commandBus, final EventBus eventBus,
-            final EventStore eventStore) {
-        return new EventSourcingRepositoryRegistrar(commandBus, eventBus,
-                eventStore);
-    }
+  @SuppressWarnings("SpringJavaAutowiringInspection")
+  @Bean
+  public EventSourcingRepositoryRegistrar eventSourcingRepositoryRegistrar(
+      final CommandBus commandBus, final EventBus eventBus, final EventStore eventStore) {
+    return new EventSourcingRepositoryRegistrar(commandBus, eventBus, eventStore);
+  }
 
-    @PostConstruct
-    public void registerRepositories() {
-        stream(load(AbstractAnnotatedAggregateRoot.class).spliterator(),
-                false).
-                map(Object::getClass).
-                distinct().
-                forEach(context::register);
-    }
+  /**
+   * {@inheritDoc}.
+   */
+  @PostConstruct
+  public void registerRepositories() {
+    stream(load(AbstractAnnotatedAggregateRoot.class).spliterator(), false)
+        .map(Object::getClass)
+        .distinct()
+        .forEach(context::register);
+  }
 
-    @Bean
-    public AnnotationCommandHandlerBeanPostProcessor
-    annotationCommandHandlerBeanPostProcessor() {
-        return new AnnotationCommandHandlerBeanPostProcessor();
-    }
+  @Bean
+  public AnnotationCommandHandlerBeanPostProcessor annotationCommandHandlerBeanPostProcessor() {
+    return new AnnotationCommandHandlerBeanPostProcessor();
+  }
 
-    @Bean
-    public AnnotationEventListenerBeanPostProcessor
-    annotationEventListenerBeanPostProcessor() {
-        return new AnnotationEventListenerBeanPostProcessor();
-    }
+  @Bean
+  public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor() {
+    return new AnnotationEventListenerBeanPostProcessor();
+  }
 
-    /** @todo Javadoc says this is auto-detected from ServiceLoader */
-    @Bean
-    @ConditionalOnMissingBean
-    public IdentifierFactory identifierFactory() {
-        return IdentifierFactory.getInstance();
-    }
+  /*
+   * @todo Javadoc says this is auto-detected from ServiceLoader
+   */
+  @Bean
+  @ConditionalOnMissingBean
+  public IdentifierFactory identifierFactory() {
+    return IdentifierFactory.getInstance();
+  }
 }

@@ -39,22 +39,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringApplicationConfiguration(
-        classes = BasicTestWithCustomConfiguration.class)
+@SpringApplicationConfiguration(classes = BasicTestWithCustomConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public final class BasicIWithCustomT {
-    @Autowired
-    private CommandBus commandBus;
-    @Autowired
-    private EventBus eventBus;
+  @Autowired
+  private CommandBus commandBus;
+  @Autowired
+  private EventBus eventBus;
 
-    @Test
-    public void shouldWireCustomCommandBus() {
-        assertThat(commandBus).isNotExactlyInstanceOf(SimpleCommandBus.class);
-    }
+  @Test
+  public void shouldWireCustomCommandBus() {
+    assertThat(commandBus).isNotExactlyInstanceOf(SimpleCommandBus.class);
+  }
 
-    @Test
-    public void shouldWireCustomEventBus() {
-        assertThat(eventBus).isNotExactlyInstanceOf(SimpleEventBus.class);
-    }
+  @Test
+  public void shouldWireCustomEventBus() {
+    assertThat(eventBus).isNotExactlyInstanceOf(SimpleEventBus.class);
+  }
 }

@@ -31,5 +31,5 @@ import lombok.Value;
 
 @Value
 public class TestEvent {
-    private final String id;
+  private final String id;
 }

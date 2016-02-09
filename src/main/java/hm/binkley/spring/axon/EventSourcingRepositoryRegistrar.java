@@ -27,6 +27,9 @@
 
 package hm.binkley.spring.axon;
 
+import static java.lang.String.format;
+import static org.axonframework.commandhandling.annotation.AggregateAnnotationCommandHandler.subscribe;
+
 import lombok.RequiredArgsConstructor;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
@@ -38,51 +41,44 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config
-        .ConfigurableListableBeanFactory;
-
-import static java.lang.String.format;
-import static org.axonframework.commandhandling.annotation
-        .AggregateAnnotationCommandHandler.subscribe;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 @RequiredArgsConstructor
 public class EventSourcingRepositoryRegistrar
-        implements BeanPostProcessor, BeanFactoryAware {
-    private final CommandBus commandBus;
-    private final EventBus eventBus;
-    private final EventStore eventStore;
-    private ConfigurableListableBeanFactory beanFactory;
+    implements BeanPostProcessor, BeanFactoryAware {
+  private final CommandBus commandBus;
+  private final EventBus eventBus;
+  private final EventStore eventStore;
+  private ConfigurableListableBeanFactory beanFactory;
 
-    @Override
-    public void setBeanFactory(final BeanFactory beanFactory)
-            throws BeansException {
-        this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+  @Override
+  public void setBeanFactory(final BeanFactory beanFactory)
+      throws BeansException {
+    this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+  }
+
+  @Override
+  public Object postProcessBeforeInitialization(final Object bean,
+                                                final String beanName)
+      throws BeansException {
+    return bean;
+  }
+
+  @Override
+  public Object postProcessAfterInitialization(final Object bean,
+                                               final String beanName)
+      throws BeansException {
+    final Class<?> beanType = bean.getClass();
+    if (!EventSourcedAggregateRoot.class.isAssignableFrom(beanType)) {
+      return bean;
     }
 
-    @Override
-    public Object postProcessBeforeInitialization(final Object bean,
-            final String beanName)
-            throws BeansException {
-        return bean;
-    }
+    final AbstractRepository repository = new EventSourcingRepository(beanType, eventStore);
+    repository.setEventBus(eventBus);
+    subscribe((Class<? extends EventSourcedAggregateRoot>) beanType, repository, commandBus);
 
-    @Override
-    public Object postProcessAfterInitialization(final Object bean,
-            final String beanName)
-            throws BeansException {
-        final Class<?> beanType = bean.getClass();
-        if (!EventSourcedAggregateRoot.class.isAssignableFrom(beanType))
-            return bean;
+    beanFactory.registerSingleton(format("%sRepository", beanName), repository);
 
-        final AbstractRepository repository = new EventSourcingRepository(
-                beanType, eventStore);
-        repository.setEventBus(eventBus);
-        subscribe((Class<? extends EventSourcedAggregateRoot>) beanType,
-                repository, commandBus);
-
-        beanFactory.registerSingleton(format("%sRepository", beanName),
-                repository);
-
-        return bean;
-    }
+    return bean;
+  }
 }

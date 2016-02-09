@@ -30,20 +30,19 @@ package hm.binkley.spring.axon.handlers;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.eventsourcing.annotation
-        .AbstractAnnotatedAggregateRoot;
+    .AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.kohsuke.MetaInfServices;
 
 @MetaInfServices
 @NoArgsConstructor
-public class HandlersTestAggregateRoot
-        extends AbstractAnnotatedAggregateRoot<String> {
-    @AggregateIdentifier
-    private String id;
+public class HandlersTestAggregateRoot extends AbstractAnnotatedAggregateRoot<String> {
+  @AggregateIdentifier
+  private String id;
 
-    @CommandHandler
-    public HandlersTestAggregateRoot(final TestCommand command) {
-        id = command.getId(); // TODO: Wonky?
-        apply(new TestEvent(command.getId()));
-    }
+  @CommandHandler
+  public HandlersTestAggregateRoot(final TestCommand command) {
+    id = command.getId(); // TODO: Wonky?
+    apply(new TestEvent(command.getId()));
+  }
 }

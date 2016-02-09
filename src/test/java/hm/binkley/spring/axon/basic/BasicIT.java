@@ -41,25 +41,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BasicTestConfiguration.class)
 public final class BasicIT {
-    @Autowired
-    private CommandBus commandBus;
-    @Autowired
-    private EventBus eventBus;
-    @Autowired
-    private EventStore eventStore;
+  @Autowired
+  private CommandBus commandBus;
+  @Autowired
+  private EventBus eventBus;
+  @Autowired
+  private EventStore eventStore;
 
-    @Test
-    public void shouldWireCommandBus() {
-        assertThat(commandBus).isNotNull();
-    }
+  @Test
+  public void shouldWireCommandBus() {
+    assertThat(commandBus).isNotNull();
+  }
 
-    @Test
-    public void shouldWireEventBus() {
-        assertThat(eventBus).isNotNull();
-    }
+  @Test
+  public void shouldWireEventBus() {
+    assertThat(eventBus).isNotNull();
+  }
 
-    @Test
-    public void shouldWireEventStore() {
-        assertThat(eventStore).isNotNull();
-    }
+  @Test
+  public void shouldWireEventStore() {
+    assertThat(eventStore).isNotNull();
+  }
 }
